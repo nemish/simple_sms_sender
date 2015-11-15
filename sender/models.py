@@ -2,13 +2,14 @@
 from datetime import datetime
 
 from django.db import models
+from django.utils import timezone
 from model_utils import Choices
 from jsonfield import JSONField
 
 
 class SendSmsLog(models.Model):
 
-    timestamp = models.DateTimeField(default=datetime.now)
+    timestamp = models.DateTimeField(default=timezone.now)
     api_gate = models.ForeignKey('SmsAPIGate', related_name='log_records')
     request_params = JSONField()
     response = JSONField(null=True)
