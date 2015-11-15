@@ -1,12 +1,20 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase
-from sender.factories import SmsAPIGateFactory
-from sender.sms_handlers import SmsHandler, CustomSmsHandler
+import factory
 
-class SmsAPIGateTestCase(TestCase):
 
-    def setUp(self):
-        self.gate = SmsAPIGateFactory()
+class SmsAPIGateFactory(factory.django.DjangoModelFactory):
 
-    def test_get_handler(self):
-        self.assertEqual(self.gate.get_handler(), SmsHandler)
+    title = factory.Sequence(lambda n: 'Gate {}'.format(n))
+    url = factory.Sequence(lambda n: 'http://exapmle_{}.com'.format(n))
+
+    class Meta:
+        model = 'sender.SmsAPIGate'
+
+
+class SendSmsLogFactory(factory.django.DjangoModelFactory):
+
+    api_gate = factory.SubFactory(SmsAPIGateFactory)
+    request_params = factory.Sequence(lambda n: {'a': n})
+
+    class Meta:
+        model = 'sender.SendSmsLog'

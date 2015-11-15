@@ -1,20 +1,4 @@
 # -*- coding: utf-8 -*-
-
-import factory
-
-
-class SmsAPIGateFactory(factory.django.DjangoModelFactory):
-
-    title = factory.Sequence(lambda n: 'Gate {}'.format(n))
-    url = factory.Sequence(lambda n: 'http://exapmle_{}.com'.format(n))
-
-    class Meta:
-        model = 'sender.SmsAPIGate'
-
-
-
-# =====================================
-# -*- coding: utf-8 -*-
 from datetime import datetime
 
 from django.db import models
@@ -27,8 +11,8 @@ class SendSmsLog(models.Model):
     timestamp = models.DateTimeField(default=datetime.now)
     api_gate = models.ForeignKey('SmsAPIGate', related_name='log_records')
     request_params = JSONField()
-    response = JSONField()
-    error = models.CharField(max_length=256)
+    response = JSONField(null=True)
+    error = models.CharField(max_length=256, null=True)
 
 
 class SmsAPIGate(models.Model):

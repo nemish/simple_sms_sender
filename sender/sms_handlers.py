@@ -2,41 +2,19 @@
 
 import sys
 import requests
-
-
-def get_handler(gate):
-    return getattr(sys.modules[__name__], gate.handler_name)
-
-
-class HandleSmsLogger(object):
-    def __init__(self, gate, msg_data):
-        self._gate = gate
-        self._record = self._log_sending(msg_data)
-
-    def log_sending(self, msg_data):
-        return self._gate.log_records.create(
-            request_params=msg_data
-        )
-
-    def log_error(self, err_string):
-        self._record.error = err_string
-        self._record.save()
-
-    def log_response(self, resp):
-        self._record.response = resp
-        self._record.save()
+from sender.sms_logger import SmsDBLogger
 
 
 class SmsHandler(object):
 
     def __init__(self, gate):
         self._gate = gate
-        self._logger = HandleSmsLogger(self._gate, msg_data)
+        self._logger = self._get_logger()
         self._response = None
         self._error = None
 
     def send(self, msg_data):
-        self._logger.log_sending()
+        self._logger.log_sending(msg_data)
         try:
             self._response = self._make_request(msg_data)
             self._logger.log_response(self._response)
@@ -52,6 +30,9 @@ class SmsHandler(object):
 
     def get_error(self):
         return self._error
+
+    def _get_logger(self):
+        return SmsDBLogger(self._gate)
 
     def _make_request(self, msg_data):
         return requests.post(self._gate.url, json=msg_data).json()
